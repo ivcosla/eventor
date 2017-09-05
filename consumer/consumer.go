@@ -1,11 +1,19 @@
 package consumer
 
-type listeners map[string]func()
-
-func (l listeners) Register(key string, callback func()) {
-	l[key] = callback
+type consumer struct {
+	hooks map[string]func()
 }
 
-func (l listeners) fire(key string) {
-	l[key]()
+func NewConsumer() consumer {
+	return consumer{
+		hooks: make(map[string]func()),
+	}
+}
+
+func (c consumer) Register(key string, callback func()) {
+	c.hooks[key] = callback
+}
+
+func (c consumer) fire(key string) {
+	c.hooks[key]()
 }

@@ -12,15 +12,15 @@ type entity struct {
 var _ = Describe("When I register a handler", func() {
 	Context("And I call it", func() {
 		It("Should update the business entity", func() {
-			listener := listeners{}
+			consumer := NewConsumer()
 			domainObject := entity{
 				id: 3,
 			}
-			listener.Register("update listener", func() {
+			consumer.Register("update listener", func() {
 				domainObject.id++
 			})
 
-			listener.fire("update listener")
+			consumer.fire("update listener")
 
 			Expect(domainObject.id).To(Equal(4))
 		})
