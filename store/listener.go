@@ -32,3 +32,7 @@ func (l *Listener) configure() {
 	l.config.Producer.Return.Successes = false
 	l.config.Producer.Return.Errors = true
 }
+
+func (l *Listener) Listener() sarama.Consumer {
+	return l.listener
+}
