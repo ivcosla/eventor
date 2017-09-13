@@ -17,6 +17,10 @@ func NewEmmitter(brokerList []string) Emmitter {
 	return emmitter
 }
 
+func (e *Emmitter) Emmitter() sarama.AsyncProducer {
+	return e.emmitter
+}
+
 func (e *Emmitter) new(brokerList []string) {
 	var err error
 	e.configure()

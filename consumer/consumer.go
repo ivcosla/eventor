@@ -14,7 +14,7 @@ type consumer struct {
 	businessEntityListener sarama.PartitionConsumer
 }
 
-func NewConsumer(businessEntity string, listener store.Listener) consumer {
+func New(businessEntity string, listener store.Listener) consumer {
 	return consumer{
 		hooks:          make(map[string]func(b []byte)),
 		listener:       listener,
