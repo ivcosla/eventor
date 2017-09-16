@@ -5,8 +5,8 @@ For further understanding of event sourcing [this publication](http://microservi
 
 ## Goals
 The library aims to:
-- [ ] Define event listener functions that updates business entities
-- [ ] Abstract communication with the event store
-    - [ ] Support for kafka as event store
+- [x] Define event listener functions that updates business entities
+- [x] Abstract communication with the event store
+    - [x] Support for kafka as event store (not decoupled from kafka)
 - [ ] Replay events on startup to build actual status of the business entity
-- [ ] Fire events on changes to the entities
+- [x] Fire events on changes to the entities
