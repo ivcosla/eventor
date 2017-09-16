@@ -18,11 +18,11 @@ type updateListener struct {
 
 var _ = Describe("When I register a handler", func() {
 	var listener store.Listener
-	var consumer consumer
+	var Consumer Consumer
 
 	BeforeEach(func() {
 		listener = store.NewListener([]string{"localhost:9092"})
-		consumer = NewConsumer("business_entity", listener)
+		Consumer = NewConsumer("business_entity", listener)
 	})
 
 	Context("And I call it", func() {
@@ -30,7 +30,7 @@ var _ = Describe("When I register a handler", func() {
 			domainObject := entity{
 				id: 3,
 			}
-			consumer.Register("update listener", func(b []byte) {
+			Consumer.Register("update listener", func(b []byte) {
 				var payload updateListener
 				json.Unmarshal(b, &payload)
 
@@ -38,7 +38,7 @@ var _ = Describe("When I register a handler", func() {
 			})
 			producerPayload := []byte(`{"increment":2}`)
 
-			consumer.fire("update listener", producerPayload)
+			Consumer.fire("update listener", producerPayload)
 
 			Expect(domainObject.id).To(Equal(5))
 		})

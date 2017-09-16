@@ -8,24 +8,26 @@ import (
 )
 
 type Producer struct {
-	emmitter store.Emmitter
+	businessEntity string
+	emmitter       store.Emmitter
 }
 
-func New(brokerList []string) Producer {
+func New(businessEntity string, emmitter store.Emmitter) Producer {
 	return Producer{
-		emmitter: store.NewEmmitter(brokerList),
+		businessEntity: businessEntity,
+		emmitter:       emmitter,
 	}
 }
 
-func (p *Producer) Emmit(businessEntity string, event string, data interface{}) {
+func (p *Producer) Emmit(event string, data interface{}) {
 	payload, err := json.Marshal(data)
 	if err != nil {
 		panic("event data cannot be marshaled into json")
 	}
 
 	p.emmitter.Emmitter().Input() <- &sarama.ProducerMessage{
-		Topic: businessEntity,
+		Topic: p.businessEntity,
 		Key:   sarama.StringEncoder(event),
-		Value: sarama.StringEncoder(payload),
+		Value: sarama.ByteEncoder(payload),
 	}
 }

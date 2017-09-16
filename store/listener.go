@@ -2,11 +2,14 @@ package store
 
 import (
 	"log"
+	"os"
+	"os/signal"
 
 	"github.com/Shopify/sarama"
 )
 
 type Listener struct {
+	signals  chan os.Signal
 	config   *sarama.Config
 	listener sarama.Consumer
 }
@@ -24,6 +27,9 @@ func (l *Listener) new(brokerList []string) {
 	if err != nil {
 		log.Fatalln("Listener.New: Cannot connect to kafka broker list: ", brokerList)
 	}
+	l.signals = make(chan os.Signal, 1)
+	signal.Notify(l.signals, os.Interrupt)
+	go l.listenToChannels()
 }
 
 func (l *Listener) configure() {
@@ -35,4 +41,10 @@ func (l *Listener) configure() {
 
 func (l *Listener) Listener() sarama.Consumer {
 	return l.listener
+}
+
+func (l *Listener) listenToChannels() {
+	<-l.signals
+	l.listener.Close()
+	os.Exit(0)
 }

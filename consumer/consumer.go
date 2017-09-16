@@ -1,32 +1,31 @@
 package consumer
 
 import (
-	"encoding/json"
 	"eventor/store"
 
 	"github.com/Shopify/sarama"
 )
 
-type consumer struct {
+type Consumer struct {
 	hooks                  map[string]func(b []byte)
 	listener               store.Listener
 	businessEntity         string
 	businessEntityListener sarama.PartitionConsumer
 }
 
-func New(businessEntity string, listener store.Listener) consumer {
-	return consumer{
+func New(businessEntity string, listener store.Listener) Consumer {
+	return Consumer{
 		hooks:          make(map[string]func(b []byte)),
 		listener:       listener,
 		businessEntity: businessEntity,
 	}
 }
 
-func (c *consumer) Register(key string, callback func(b []byte)) {
+func (c *Consumer) Register(key string, callback func(b []byte)) {
 	c.hooks[key] = callback
 }
 
-func (c *consumer) Listen() {
+func (c *Consumer) Listen() {
 	var err error
 
 	eventStore := c.listener.Listener()
@@ -43,18 +42,15 @@ func (c *consumer) Listen() {
 	go c.ingestEvents()
 }
 
-func (c *consumer) ingestEvents() {
-	var key string
-
+func (c *Consumer) ingestEvents() {
 	for {
 		select {
 		case event := <-c.businessEntityListener.Messages():
-			json.Unmarshal(event.Key, &key)
-			c.fire(key, event.Value)
+			c.fire(string(event.Key), event.Value)
 		}
 	}
 }
 
-func (c *consumer) fire(key string, b []byte) {
+func (c *Consumer) fire(key string, b []byte) {
 	c.hooks[key](b)
 }
